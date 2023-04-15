@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import morgan from 'morgan';
 import conncetDB from './config/db.js';
 import authRoutes from './routes/authRoute.js';
+import cors from 'cors'
 
 
 
@@ -10,6 +11,7 @@ const port = process.env.PORT || 5000;
 const app = express()
 dotenv.config();
 conncetDB();
+app.use(cors())
 app.use(express.json())
 app.use(morgan('dev'))
 
