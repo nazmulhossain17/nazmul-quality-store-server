@@ -43,7 +43,7 @@ export const createProductContainer = async(req, res) =>{
 
 export const getProductController = async(req, res) =>{
     try{
-        const products = await productModel.find({}).select("-photo").limit(12).sort({createdAt: -1});
+        const products = await productModel.find({}).populate('category').select("-photo").limit(12).sort({createdAt: -1});
         res.status(200).send({
             success: true,
             counTotal: products.length,
@@ -55,6 +55,44 @@ export const getProductController = async(req, res) =>{
         res.status(500).send({
             success: false,
             message: 'Error while getting products',
+            error
+        })
+    }
+}
+
+
+export const getSingleProductController = async(req, res) =>{
+    try{
+        const product = await productModel.findOne({slug:req.params.slug}).select("-photo").populate("category")
+        res.status(200).send({
+            success: true,
+            message: 'Single Product Fetched',
+            product
+        })
+
+    } catch(error){
+        console.log(error)
+        res.status(500).send({
+            success: false,
+            message: 'Error while getting single product',
+            error
+        })
+    }
+}
+
+
+export const productPhotoController = async(req, res) =>{
+    try{
+        const product = await productModel.findById(req.params.pid).select("photo")
+        if(product.photo.data){
+            res.set("Content-type", product.photo.contentType);
+            return res.status(200).send(product.photo.data);
+        }
+    } catch(error){
+        console.log(error)
+        res.status(500).send({
+            success: false,
+            message: 'Error while getting photo',
             error
         })
     }
